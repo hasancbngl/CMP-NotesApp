@@ -31,6 +31,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hasancbngl.notesapp.model.Note
 import com.hasancbngl.notesapp.notes.ListNotesScreen
@@ -64,6 +65,8 @@ fun App() {
                 }
             }
         ) {
+            val notes = viewModel.notes.collectAsStateWithLifecycle()
+
             Column(modifier = Modifier.padding(it)) {
                 Text(
                     "Notes",
@@ -72,7 +75,7 @@ fun App() {
                     fontSize = 32.sp
                 )
                 if (viewModel.notes.value.isNotEmpty()) {
-                    ListNotesScreen(viewModel.notes.value)
+                    ListNotesScreen(notes.value)
                 } else EmptyView()
             }
 
@@ -89,6 +92,10 @@ fun App() {
                         },
                         onSave = {
                             viewModel.addNotes(it)
+                            scope.launch {
+                                bottomSheetState.hide()
+                            }
+                            showBottomSheet = false
                         }
                     )
                 }
@@ -114,13 +121,19 @@ fun AddItemDialog(
         TextField(
             value = title, onValueChange = { title = it },
             colors = color, modifier = Modifier.fillMaxWidth(),
-            textStyle = TextStyle(fontSize = 22.sp)
+            textStyle = TextStyle(fontSize = 22.sp),
+            placeholder = {
+                Text("Title", fontSize = 22.sp)
+            }
         )
 
         TextField(
             value = description, onValueChange = { description = it },
             colors = color, modifier = Modifier.fillMaxWidth(),
-            minLines = 5
+            minLines = 5,
+            placeholder = {
+                Text("Write the description", fontSize = 22.sp)
+            }
         )
         Row(modifier = Modifier.align(Alignment.End)) {
             Button(onClick = onCancel) {
