@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.hasancbngl.notesapp.db.NoteDatabase
 import com.hasancbngl.notesapp.model.Note
 import com.hasancbngl.notesapp.notes.ListNotesScreen
 import com.hasancbngl.notesapp.ui.NotesAppTheme
@@ -46,8 +47,8 @@ import notesapp.shared.generated.resources.note
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
-fun App() {
-    val viewModel = viewModel { HomeViewModel() }
+fun App(database: NoteDatabase) {
+    val viewModel = viewModel { HomeViewModel(database) }
     val bottomSheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -65,7 +66,7 @@ fun App() {
                 }
             }
         ) {
-            val notes = viewModel.notes.collectAsStateWithLifecycle()
+            val notes = viewModel.notes.collectAsStateWithLifecycle(emptyList())
 
             Column(modifier = Modifier.padding(it)) {
                 Text(
@@ -74,7 +75,7 @@ fun App() {
                         .padding(16.dp),
                     fontSize = 32.sp
                 )
-                if (viewModel.notes.value.isNotEmpty()) {
+                if (notes.value.isNotEmpty()) {
                     ListNotesScreen(notes.value)
                 } else EmptyView()
             }

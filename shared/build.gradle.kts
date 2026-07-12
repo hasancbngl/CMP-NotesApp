@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.androidx.room)
+    alias(libs.plugins.ksp)
 }
 
 kotlin {
@@ -39,6 +41,8 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
+            //sqllite wrapper
+            implementation(libs.androidx.room.sqlite.wrapper)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -49,6 +53,10 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+
+            //room
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.sqlite.bundled)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -58,4 +66,8 @@ kotlin {
 
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
+}
+
+room {
+    schemaDirectory("$projectDir/schema")
 }
